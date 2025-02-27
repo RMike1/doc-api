@@ -10,6 +10,9 @@ class StudentController extends Controller
 {
     public function export() 
     {
-        return Excel::download(new StudentExport, 'students.xlsx');
+        $fileName='students.xlsx';
+        // return Excel::download(new StudentExport, $fileName);
+        (new StudentExport)->store($fileName);
+        return response()->json('Export started..');
     }
 }

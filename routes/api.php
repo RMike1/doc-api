@@ -11,5 +11,5 @@ Route::get('/user', function (Request $request) {
 
 Route::prefix('students')->group(function () {
     Route::get('/export', [StudentController::class,'export'])->name('students.export');
-    Route::get('/import', [StudentController::class,'export'])->name('students.import');
+    Route::post('/import', [StudentController::class,'import'])->name('students.import');
 });

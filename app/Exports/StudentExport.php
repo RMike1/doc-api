@@ -13,6 +13,8 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use Maatwebsite\Excel\Concerns\FromQuery;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 
 class StudentExport implements FromQuery, WithHeadings, WithColumnWidths, ShouldAutoSize, WithStyles, ShouldQueue
@@ -57,5 +59,12 @@ class StudentExport implements FromQuery, WithHeadings, WithColumnWidths, Should
             'D'  => ['alignment' => ['horizontal' => 'center']],
             'E'  => ['alignment' => ['horizontal' => 'center']],
         ];
+    }
+
+    public function failed(Throwable $exception): void
+    {
+        
+        // Log::error($exception->getMessage());
+
     }
 }

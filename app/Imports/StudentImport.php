@@ -41,7 +41,6 @@ class StudentImport implements ToModel, WithStartRow, WithValidation, WithChunkR
              '*.2' => 'required|max:255',
              '*.3' => 'required|max:255',
              '*.4' => Rule::in(['one','two','three']),
-             
         ];
     }
 

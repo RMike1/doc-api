@@ -1,16 +1,18 @@
 <?php
 
-use Maatwebsite\Excel\Facades\Excel;
+use App\Models\Student;
 use App\Exports\StudentExport;
 use App\Imports\StudentImport;
 use App\Services\ExcelService;
 use Illuminate\Http\UploadedFile;
-use App\Models\Student;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Jobs\QueueImport;
-use App\Http\Controllers\Student\StudentController;
-use Illuminate\Support\Facades\Queue;
+use App\Services\Students\StudentService;
+use App\Services\Students\Excel\StudentExcel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Http\Controllers\Student\StudentController;
 
 uses(RefreshDatabase::class);
 
@@ -18,21 +20,21 @@ beforeEach(function () {
     Storage::fake();
     Excel::fake();
     $this->excelService = app(ExcelService::class);
+    $this->student_service = app(StudentService::class);
 });
 
-
-
 describe('student-export', function () {
+
     it('queues student export successfully', function () {
         Student::factory()->count(10)->create();
 
         $this->excelService->export();
 
         $file = 'students.xlsx';
-
+        
         Excel::assertQueued($file);
 
-        Excel::assertQueued($file, function (StudentExport $export) {
+        Excel::assertQueued($file, function (StudentExcel $export) {
             return true;
         });
     });

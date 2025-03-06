@@ -1,47 +1,49 @@
 <?php
-
-use App\Models\Student;
-use App\Exports\StudentExport;
-use App\Imports\StudentImport;
-use App\Services\ExcelService;
-use Illuminate\Http\UploadedFile;
-use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\Queue;
-use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Jobs\QueueImport;
 use App\Services\Students\StudentService;
-use App\Services\Students\Excel\StudentExcel;
+use Mockery\MockInterface;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Http\Controllers\Student\StudentController;
 
-uses(RefreshDatabase::class);
+beforeEach(fn() => Storage::fake());
 
-beforeEach(function () {
-    Storage::fake();
-    Excel::fake();
-    $this->excelService = app(ExcelService::class);
-    $this->student_service = app(StudentService::class);
-});
+describe('import students data', function () {
 
-describe('student-export', function () {
+    it('import students data successfully', function () {
+        $file = UploadedFile::fake()->create('students.xlsx');
+        $this->mock(StudentService::class)
+             ->shouldReceive()
+             ->import()
+             ->once()
+             ->with($file)
+             ->andReturn(['message' => 'Student data import is in progress...']);
 
-    it('queues student export successfully', function () {
-        Student::factory()->count(10)->create();
-
-        $this->excelService->export();
-
-        $file = 'students.xlsx';
-        
-        Excel::assertQueued($file);
-
-        Excel::assertQueued($file, function (StudentExcel $export) {
-            return true;
-        });
+        $this->postJson(route('students.import'), ['file' => $file])
+             ->assertStatus(200)
+             ->assertJson(['message' => 'Student data import is in progress...']);
     });
 
-    it('validates imported Excel file', fn() =>
-    $this->postJson(route('students.import'), [
-        'file' => null,
-    ])->assertStatus(422)
-        ->assertJsonValidationErrors(['file']));
+    it('returns error when file is not provided', function () {
+        $this->mock(StudentService::class)
+             ->shouldNotReceive()
+             ->import();
+
+        $this->postJson(route('students.import'), ['file' => null])
+             ->assertStatus(422)
+             ->assertInvalid([
+                'file' => 'The file field is required.',
+            ]);
+    });
+
+});
+
+it('export students data successfully', function () {
+    $this->mock(StudentService::class)
+         ->shouldReceive()
+         ->export()
+         ->with('excel')
+         ->once();
+
+    $this->getJson(route('students.export', ['file_type' => 'excel']))
+         ->assertStatus(200)
+         ->assertExactJson(['message' => 'Export started...']);
 });

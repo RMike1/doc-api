@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class FileRequest extends FormRequest
+class FileExportRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +23,7 @@ class FileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => 'required|max:6000|mimes:xlsx,csv,xls',
+            'file_type'=>['required', Rule::in(['excel','pdf'])]
         ];
     }
 }

@@ -2,33 +2,39 @@
 
 namespace App\Services\Students;
 
+use App\Enums\FileExtension;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Services\Students\Excel\StudentExcel;
 
 class StudentService
 {
-    public function export()
+    public function export($file_type)
     {
-        $fileName = 'students.xlsx';
-        (new StudentExcel)->store($fileName);
+        if($file_type==='excel'){
+            dd('hey excel');    
+            $fileName = 'students.xlsx';
+            (new StudentExcel)->store($fileName);
+        }elseif($file_type==='pdf'){
+            dd('hey pdf');    
+        }else{
+            return [
+                'file not supported!'
+            ];
+        }
     }
-
-    public function import($file)
+    public function import($file): array
     {
         $fileExtension = strtolower($file->getClientOriginalExtension());
-        if($fileExtension==='xlsx'){
-            Excel::queueImport(new StudentExcel, $file, null, \Maatwebsite\Excel\Excel::XLSX);
-            return ['message'=>'Student data import is in progress with '.$fileExtension.' extension...'];
-        }
-        elseif($fileExtension==='csv'){
-            Excel::queueImport(new StudentExcel, $file, null, \Maatwebsite\Excel\Excel::CSV);
-            return ['message'=>'Student data import is in progress with '.$fileExtension.' extension...'];
-        }
-        elseif($fileExtension==='xls'){
-            Excel::queueImport(new StudentExcel, $file, null, \Maatwebsite\Excel\Excel::XLS);
-            return ['message'=>'Student data import is in progress with '.$fileExtension.' extension...'];
-        }else{
-            return ['error' => 'Invalid file format. Only xlsx or csv are allowed.'];
-        }
+        $fileType = FileExtension::tryFrom($fileExtension);
+
+        return $fileType
+            ? $this->queueImport($file, $fileType->fileFormat())
+            : ['error' => 'Invalid file format. Only xlsx, csv, or xls are allowed.'];
+    }
+
+    private function queueImport($file, string $format): array
+    {
+        Excel::queueImport(new StudentExcel, $file, null, $format);
+        return ['message' => "Student data import is in progress with {$file->getClientOriginalExtension()} extension..."];
     }
 }

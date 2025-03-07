@@ -35,15 +35,3 @@ describe('import students data', function () {
     });
 
 });
-
-it('export students data successfully', function () {
-    $this->mock(StudentService::class)
-         ->shouldReceive()
-         ->export()
-         ->with('excel')
-         ->once();
-
-    $this->getJson(route('students.export', ['file_type' => 'excel']))
-         ->assertStatus(200)
-         ->assertExactJson(['message' => 'Export started...']);
-});

@@ -339,8 +339,8 @@ return [
         |
         */
         'local_permissions'   => [
-            // 'dir'  => 0755,
-            // 'file' => 0644,
+            'dir'  => 0755,
+            'file' => 0644,
         ],
 
         /*

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exports;
+namespace App\Services\Students\Excel;
 
 use App\Models\Student;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -20,11 +20,12 @@ use Throwable;
 class StudentExport implements FromQuery, WithHeadings, WithColumnWidths, ShouldAutoSize, WithStyles, ShouldQueue
 {
     use Exportable;
-    
+        
     public function query()
     {
         return Student::select('first_name', 'last_name', 'age', 'student_no', 'level');
     }
+    
     public function headings(): array
     {
         return [

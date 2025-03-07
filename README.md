@@ -1,0 +1,1 @@
+[![Tests](https://github.com/RMike1/doc-api/actions/workflows/test.yml/badge.svg)](https://github.com/RMike1/doc-api/actions/workflows/test.yml)

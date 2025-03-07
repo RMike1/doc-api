@@ -1,14 +1,37 @@
 <?php
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\StudentExport;
-use App\Imports\StudentImport;
-use App\Services\ExcelService;
+use App\Services\Students\StudentService;
+use Mockery\MockInterface;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
-use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(TestCase::class)->in(__DIR__);
+beforeEach(fn() => Storage::fake());
 
-it('imports student data from an Excel file', function () {
-    
+describe('import students data', function () {
+
+    it('import students data successfully', function () {
+        $file = UploadedFile::fake()->create('students.xlsx');
+        $this->mock(StudentService::class)
+             ->shouldReceive()
+             ->import()
+             ->once()
+             ->with($file)
+             ->andReturn(['message' => 'Student data import is in progress...']);
+
+        $this->postJson(route('students.import'), ['file' => $file])
+             ->assertStatus(200)
+             ->assertJson(['message' => 'Student data import is in progress...']);
+    });
+
+    it('returns error when file is not provided', function () {
+        $this->mock(StudentService::class)
+             ->shouldNotReceive()
+             ->import();
+
+        $this->postJson(route('students.import'), ['file' => null])
+             ->assertStatus(422)
+             ->assertInvalid([
+                'file' => 'The file field is required.',
+            ]);
+    });
+
 });

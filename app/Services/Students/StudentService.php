@@ -5,6 +5,7 @@ namespace App\Services\Students;
 use App\Models\Student;
 use App\Enums\FileExtension;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage;
 use App\Services\Students\Excel\StudentExport;
 use App\Services\Students\Excel\StudentImport;
 
@@ -15,28 +16,21 @@ class StudentService
 
     public function export($file_type)
     {
-        if ($file_type === 'excel') {
+        if ($file_type === 'excel') {   
             $name = now()->format('YmdHis');
-            $filePath = storage_path("app/exports/excel/employees_{$name}.xlsx");
+            $filePath = "exports/employees_{$name}.xlsx";
             (new StudentExport)->store($filePath);
 
         } elseif ($file_type === 'pdf') {
-
-
-            Student::select('first_name', 'last_name', 'age', 'student_no', 'level')->chunkById(100, function ($students) {
-                foreach ($students as $student) {
-                    $pdf = \PDF::loadView('export-pdf', compact(
+            $students=Student::select('first_name', 'last_name', 'age', 'student_no', 'level')->get();
+                    $pdf = \PDF::loadView('export-pdf', 
                         [
-                            'students'=>$student
-                        ]));
+                            'students'=>$students
+                        ]);
                     $name = now()->format('YmdHis');
-                    $filePath = storage_path("app/exports/pdf/employees_{$name}.pdf");
+                    $filePath = Storage::disk('local')->path("exports/employees_{$name}.pdf");
                     $fileUrlPdf = url($filePath);
                     $pdf->save($filePath);
-
-                }
-            });
-
         } else {
             return [
                 'unsupported file!'

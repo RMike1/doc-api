@@ -18,28 +18,19 @@ class StudentService
     {
         if ($file_type === 'excel') {   
             $name = now()->format('YmdHis');
-            $filePath = "exports/excel/employees_{$name}.xlsx";
+            $filePath = "exports/employees_{$name}.xlsx";
             (new StudentExport)->store($filePath);
 
         } elseif ($file_type === 'pdf') {
-
             $students=Student::select('first_name', 'last_name', 'age', 'student_no', 'level')->get();
-            // Student::select('first_name', 'last_name', 'age', 'student_no', 'level')->chunkById(100, function ($students) {
-            //     foreach ($students as $student) {
                     $pdf = \PDF::loadView('export-pdf', 
                         [
                             'students'=>$students
                         ]);
                     $name = now()->format('YmdHis');
-                    // $filePath = storage_path("app/private/exports/pdf/employees_{$name}.pdf");
-                    $filePath = Storage::disk('local')->path("exports/pdf/employees_{$name}.pdf");
-
+                    $filePath = Storage::disk('local')->path("exports/employees_{$name}.pdf");
                     $fileUrlPdf = url($filePath);
                     $pdf->save($filePath);
-
-            //     }
-            // });
-
         } else {
             return [
                 'unsupported file!'

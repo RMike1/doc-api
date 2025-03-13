@@ -17,32 +17,35 @@ class StudentService
 
     public function export(string $file_type): array
     {
-        if ($file_type === 'excel') {   
+        if ($file_type === 'excel') {
             $name = now()->format('YmdHis');
             $filePath = "exports/employees_{$name}.xlsx";
             (new StudentExport)->store($filePath);
             return ['message' => 'Export started...'];
 
+            
         } elseif ($file_type === 'pdf') {
-            $students=Student::select('first_name', 'last_name', 'age', 'student_no', 'level')->get();
+            $students = Student::select('first_name', 'last_name', 'age', 'student_no', 'level')->get();
             if ($students->isNotEmpty()) {
-                $pdf = \PDF::loadView('export-pdf', 
+                $pdf = \PDF::loadView(
+                    'export-pdf',
                     [
-                        'students'=>$students
-                    ]);
+                        'students' => $students
+                    ]
+                );
                 $name = now()->format('YmdHis');
                 $filePath = Storage::disk('local')->path("exports/employees_{$name}.pdf");
                 $fileUrlPdf = url($filePath);
                 $pdf->save($filePath);
                 return ['message' => 'Export started...', 'file_path' => $filePath];
-            }else{
+            } else {
                 return [
-                    'message'=>'No data to export!'
+                    'message' => 'No data to export!'
                 ];
             }
         } else {
             return [
-                'unsupported file!'
+                'error' => 'unsupported file!'
             ];
         }
     }

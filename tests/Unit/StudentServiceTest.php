@@ -36,19 +36,24 @@ it('returns error when no data to export', fn () =>
 it('exports students as excel', function () {
     $this->service->export('excel');
     Excel::matchByRegex();
-    Excel::assertStored('/exports\/employees_\d{14}\.xlsx/', function (StudentExport $export) {
+    Excel::assertQueued('/exports\/employees_\d{14}\.xlsx/', function (StudentExport $export) {
         return true;
     });
 });
 
 it('returns an error for unsupported file types on export',fn() =>
-    expect($this->service->export('txt'))->toBe(['unsupported file!'])
+    expect($this->service->export('txt'))->toBe(['error'=>'unsupported file!'])
 );
 
 it('imports students from excel', function () {
     $file = UploadedFile::fake()->create('students.xlsx');
     Excel::shouldReceive('queueImport')->once()->with(Mockery::type(StudentImport::class), $file, null, 'Xlsx');
     expect($this->service->import($file))->toBe(['message' => 'Student data import is in progress with xlsx extension...']);
+});
+it('imports students from Csv', function () {
+    $file = UploadedFile::fake()->create('students.csv');
+    Excel::shouldReceive('queueImport')->once()->with(Mockery::type(StudentImport::class), $file, null, 'Csv');
+    expect($this->service->import($file))->toBe(['message' => 'Student data import is in progress with csv extension...']);
 });
 
 it('rejects an invalid file types on import', function () {

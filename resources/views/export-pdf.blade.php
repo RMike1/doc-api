@@ -43,7 +43,7 @@
 
 <body>
 
-    <h1 style="text-align: center">Student Data</h1>
+    <h1 style="text-align: center">Students Data</h1>
     <table>
         <thead>
             <tr>

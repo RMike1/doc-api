@@ -13,7 +13,8 @@ describe('export students data', function(){
               ->shouldReceive()
               ->export()
               ->with($format)
-              ->once();
+              ->once()
+              ->andReturn(['message' => 'Export started...']);
      
          $this->getJson(route('students.export', ['file_type' => $format]))
               ->assertStatus(200)

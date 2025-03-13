@@ -21,8 +21,17 @@ it('exports students as pdf', function () {
     PDF::fake();
     Student::factory()->count(10)->create();
     $response = $this->service->export('pdf');
-    PDF::assertFileNameIs($response);
+    $view = 'export-pdf';
+    expect($response)->toBe(['message' => 'Export started...', 'file_path' => $response['file_path']]);
+    PDF::assertFileNameIs($response['file_path'])
+    ->assertViewIs($view)
+    ->assertViewHas('students', $view = null)
+    ->assertSeeText('Students Data');
 });
+
+it('returns error when no data to export', fn () =>
+    expect($this->service->export('pdf'))->toBe(['message' => 'No data to export!'])
+);
 
 it('exports students as excel', function () {
     $this->service->export('excel');

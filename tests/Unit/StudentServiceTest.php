@@ -20,7 +20,7 @@ beforeEach(function () {
 
 describe('pdf tests..', function(){
 
-        it('exports students as pdf', function () {
+    it('exports students as pdf', function () {
             PDF::fake();
             Student::factory()->count(10)->create();
             $students = Student::get(['first_name', 'last_name', 'age', 'student_no', 'level']);

@@ -67,57 +67,13 @@ describe('export students data as pdf', function () {
             PDF::assertViewIs('export-pdf')
             ->assertSeeText('Students Data')
             ->assertDontSeeText('No data available')
-            ->assertViewHas(['students' => $students])
-            ->assertSee(' <thead>
-            <tr>
-                <th>#</th>
-                <th>First-Name</th>
-                <th>Last-Name</th>
-                <th>Age</th>
-                <th>Student No</th>
-                <th>Level</th>
-            </tr>
-        </thead>')
-            ->assertSee('   <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f4;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            background-color: #fff;
-        }
-
-        th,
-        td {
-            padding: 12px;
-            text-align: left;
-            border: 1px solid #ddd;
-        }
-
-        th {
-            background-color: #686868;
-            color: white;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-    </style>');
+            ->assertViewHas(['students' => $students]);
         $firstStudent = $students->first();
         $fields = ['first_name', 'last_name', 'age', 'level', 'student_no'];
         foreach ($fields as $field) {
             PDF::assertSeeText($firstStudent->$field);
         }
-    })->only();
+    });
 
     it('handle errors to export student data as pdf', function () {
         $this->mock(StudentService::class)

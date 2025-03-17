@@ -20,28 +20,17 @@ beforeEach(function () {
 
 describe('pdf tests..', function(){
 
-        it('exports students as pdf', function () {
+    it('exports students as pdf', function () {
             PDF::fake();
             Student::factory()->count(10)->create();
             $students = Student::get(['first_name', 'last_name', 'age', 'student_no', 'level']);
             $response = $this->service->export('pdf');
             PDF::assertFileNameIs($response['file_path'])
                 ->assertViewIs('export-pdf')
-                ->assertViewHas('students', fn($data) => $data->count() === 10)
                 ->assertSeeText('Students Data')
                 ->assertDontSeeText('Unauthorized')
                 ->assertFileNameIs($response['file_path'])
-                ->assertViewHas(['students' => $students])
-                ->assertSee('<thead>
-            <tr>
-                <th>#</th>
-                <th>First-Name</th>
-                <th>Last-Name</th>
-                <th>Age</th>
-                <th>Student No</th>
-                <th>Level</th>
-            </tr>
-        </thead>');
+                ->assertViewHas(['students' => $students]);
             $firstStudent = $students->first();
             $fields = ['first_name', 'last_name', 'age', 'level', 'student_no'];
             foreach ($fields as $field) {

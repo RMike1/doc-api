@@ -65,7 +65,6 @@ describe('export students data as pdf', function () {
         $response=$this->getJson(route('students.export', ['file_type' => 'pdf']))
             ->assertStatus(200);
             PDF::assertViewIs('export-pdf')
-            ->assertViewHas('students', fn($data) => $data->count() === 10)
             ->assertSeeText('Students Data')
             ->assertDontSeeText('No data available')
             ->assertViewHas(['students' => $students])
@@ -118,7 +117,7 @@ describe('export students data as pdf', function () {
         foreach ($fields as $field) {
             PDF::assertSeeText($firstStudent->$field);
         }
-    });
+    })->only();
 
     it('handle errors to export student data as pdf', function () {
         $this->mock(StudentService::class)

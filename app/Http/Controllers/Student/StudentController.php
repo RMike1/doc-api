@@ -11,19 +11,21 @@ use App\Services\Students\StudentService;
 
 class StudentController extends Controller
 {
-    public function __construct(protected StudentService $excel)
+    public function __construct(protected StudentService $studentService)
     {
     }
 
     public function export(FileExportRequest $req)
     {
-        $export=$this->excel->export($req->file_type);
-        return response()->json(['message' => 'Export started...']);
+        $export=$this->studentService->export($req->file_type);
+        return isset($export['error'])
+        ? response()->json(['error' => $export['error']], 500)
+        : response()->json(['message'=>$export['message']],200);
     }
 
     public function import(FileRequest $req)
 {
-    $import = $this->excel->import($req->file('file'));
+    $import = $this->studentService->import($req->file('file'));
 
     return !empty($import['error'])
         ? response()->json(['error' => $import['error']], 422)

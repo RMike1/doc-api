@@ -5,49 +5,41 @@ namespace App\Services\Students;
 use App\Models\Student;
 use App\Enums\FileExtension;
 use Illuminate\Http\UploadedFile;
+use Exception;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use App\Services\Students\Excel\StudentExport;
 use App\Services\Students\Excel\StudentImport;
+use App\Services\Students\Pdf\StudentPdfExport;
 
 class StudentService
 {
 
     //-------------------export student data----------------------
 
-    public function export(string $file_type): array
+    public function export(string $fileType): array
     {
-        if ($file_type === 'excel') {
-            $name = now()->format('YmdHis');
-            $filePath = "exports/employees_{$name}.xlsx";
-            (new StudentExport)->store($filePath);
-            return ['message' => 'Export started...'];
-
-            
-        } elseif ($file_type === 'pdf') {
-            $students = Student::select('first_name', 'last_name', 'age', 'student_no', 'level')->get();
-            if ($students->isNotEmpty()) {
-                $pdf = \PDF::loadView(
-                    'export-pdf',
-                    [
-                        'students' => $students
-                    ]
-                );
+        if ($fileType === 'excel') {
+            try {
                 $name = now()->format('YmdHis');
-                $filePath = Storage::disk('local')->path("exports/employees_{$name}.pdf");
-                $fileUrlPdf = url($filePath);
-                $pdf->save($filePath);
-                return ['message' => 'Export started...', 'file_path' => $filePath];
-            } else {
-                return [
-                    'message' => 'No data to export!'
-                ];
+                $filePath = "exports/students_{$name}.xlsx";
+                
+                (new StudentExport)->store($filePath);
+                return ['message' => 'Excel export started!'];
+            } catch (Exception $e) {
+                // Log::error($e->getMessage());
+                return ['error' => 'Excel export failed. please try again...'];
             }
-        } else {
-            return [
-                'error' => 'unsupported file!'
-            ];
+        } elseif ($fileType === 'pdf') {
+            try{
+                return (new StudentPdfExport())->generate(); 
+            }catch(Exception $e){
+                // Log::error($e->getMessage());
+                return ['error' => 'Pdf export failed. please try again...'];
+            }
         }
+        return ['error' => 'Unsupported file type!'];
     }
 
     //-------------------import student data----------------------

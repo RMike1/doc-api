@@ -18,7 +18,9 @@ class StudentController extends Controller
     public function export(FileExportRequest $req)
     {
         $export=$this->studentService->export($req->file_type);
-        return response()->json(['message'=>$export['message']],200);
+        return isset($export['error'])
+        ? response()->json(['error' => $export['error']], 500)
+        : response()->json(['message'=>$export['message']],200);
     }
 
     public function import(FileRequest $req)

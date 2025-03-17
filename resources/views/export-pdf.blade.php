@@ -55,13 +55,10 @@
                 <th>Level</th>
             </tr>
         </thead>
-        @php
-            $counter = 1;
-        @endphp
         <tbody>
-            @forelse ($students as $student)
+            @forelse ($students as $key => $student)
                 <tr>
-                    <td>{{ $counter++ }}</td>
+                    <td>{{ $key+1 }}</td>
                     <td>{{ $student->first_name }}</td>
                     <td>{{ $student->last_name }}</td>
                     <td>{{ $student->age }}</td>

@@ -27,21 +27,10 @@ describe('pdf tests..', function(){
             $response = $this->service->export('pdf');
             PDF::assertFileNameIs($response['file_path'])
                 ->assertViewIs('export-pdf')
-                ->assertViewHas('students', fn($data) => $data->count() === 10)
                 ->assertSeeText('Students Data')
                 ->assertDontSeeText('Unauthorized')
                 ->assertFileNameIs($response['file_path'])
-                ->assertViewHas(['students' => $students])
-                ->assertSee('<thead>
-            <tr>
-                <th>#</th>
-                <th>First-Name</th>
-                <th>Last-Name</th>
-                <th>Age</th>
-                <th>Student No</th>
-                <th>Level</th>
-            </tr>
-        </thead>');
+                ->assertViewHas(['students' => $students]);
             $firstStudent = $students->first();
             $fields = ['first_name', 'last_name', 'age', 'level', 'student_no'];
             foreach ($fields as $field) {

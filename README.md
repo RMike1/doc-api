@@ -1,7 +1,6 @@
 [![Tests](https://github.com/RMike1/doc-api/actions/workflows/test.yml/badge.svg)](https://github.com/RMike1/doc-api/actions/workflows/test.yml)
 
 ### Steps to Clone and Set Up this Project
-Follow these steps to clone the repo and set up the project:
 
 1. Clone the Repository
 Run the following command to clone the project from GitHub:
@@ -42,18 +41,13 @@ php artisan migrate
 php artisan serve
 ```
 
-### Technologies Used
-
-- Laravel: Backend framework
-- Laravel Excel Package: Used for generating Excel files.
-
 ### Usage
 - Start the queue worker
 ```shell
  php artisan queue:work
 ```
 
-### Endpoint
+### Endpoints
 - Export Students Data as excel
 
 ```shell

@@ -15,7 +15,7 @@ class ExportStrategyFactory
     public static function create(string $type): ExportStrategy
     {
         if (!isset(self::STRATEGIES[$type])) {
-            throw new \Exception('Unsupported export type');
+            throw new \Exception('Unsupported file type!');
         }
 
         $strategyClass = self::STRATEGIES[$type];

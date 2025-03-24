@@ -19,7 +19,7 @@ class StudentService
             $strategy = ExportStrategyFactory::create($fileType);
             return $strategy->export();  
         } catch (\Exception $e) {
-            return ['error' => 'Unsupported file type!'];
+            return ['error' => $e->getMessage()];
         }
     }
 

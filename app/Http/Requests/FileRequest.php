@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class FileRequest extends FormRequest
 {
@@ -24,5 +26,12 @@ class FileRequest extends FormRequest
         return [
             'file' => 'required|max:6000|mimes:xlsx,csv,xls',
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+            response()->json(['errors' => $validator->errors()], 422)
+        );
     }
 }

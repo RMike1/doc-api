@@ -8,7 +8,7 @@ beforeEach(function () {
     $this->strategy = new PdfExportStrategy($this->pdfExport);
 });
 
-test('generates pdf n returns success message', function () {
+it('generates pdf n returns success message', function () {
     $expectedResult = ['message' => 'PDF export started!', 'file_path' => 'exports/students.pdf'];
     $this->pdfExport->shouldReceive('generate')->once()->andReturn($expectedResult);
     
@@ -17,7 +17,7 @@ test('generates pdf n returns success message', function () {
     expect($result)->toBe($expectedResult);
 });
 
-test('returns error message when export fails', function () {
+it('returns error message when export fails', function () {
     $this->pdfExport->shouldReceive('generate')->andThrow(new \Exception('Export failed'));
     
     $result = $this->strategy->export();

@@ -23,6 +23,11 @@ class StudentController extends Controller
         : response()->json(['message'=>$export['message']],200);
     }
 
+    public function download(FileExportRequest $req)
+    {
+        return $this->studentService->download($req->file_type);
+    }
+
     public function import(FileRequest $req)
 {
     $import = $this->studentService->import($req->file('file'));
@@ -31,5 +36,4 @@ class StudentController extends Controller
         ? response()->json(['error' => $import['error']], 422)
         : response()->json(['message' => $import['message']], 200);
 }
-
 }

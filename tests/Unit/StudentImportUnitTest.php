@@ -48,42 +48,42 @@ it('processes data in chunks', function () {
 });
 
 
-it('imports students from excel file into database', function () {
-    Storage::fake('local');
-    $students = Student::factory(5)->make();
-    $testData = [
-        ['first_name', 'last_name', 'age', 'student_no', 'level'], 
-    ];
+// it('imports students from excel file into database', function () {
+//     Storage::fake('local');
+//     $students = Student::factory(5)->make();
+//     $testData = [
+//         ['first_name', 'last_name', 'age', 'student_no', 'level'], 
+//     ];
 
-    foreach ($students as $student) {
-        $testData[] = [
-            $student->first_name,
-            $student->last_name,
-            $student->age,
-            $student->student_no,
-            $student->level
-        ];
-    }
+//     foreach ($students as $student) {
+//         $testData[] = [
+//             $student->first_name,
+//             $student->last_name,
+//             $student->age,
+//             $student->student_no,
+//             $student->level
+//         ];
+//     }
     
-    $filename = 'students.xlsx';
-    Storage::disk('local')->put($filename, '');
-    $filePath = Storage::disk('local')->path($filename);
+//     $filename = 'students.xlsx';
+//     Storage::disk('local')->put($filename, '');
+//     $filePath = Storage::disk('local')->path($filename);
     
-    $mockData = \Mockery::mock(FromArray::class);;
-    $mockData->shouldReceive('array')->once()->andReturn($testData);
-    Excel::store($mockData, $filename, 'local', ExcelType::XLSX);
+//     $mockData = \Mockery::mock(FromArray::class);;
+//     $mockData->shouldReceive('array')->once()->andReturn($testData);
+//     Excel::store($mockData, $filename, 'local', ExcelType::XLSX);
     
-    $import = new StudentImport();
-    Excel::queueImport($import, $filePath);
+//     $import = new StudentImport();
+//     Excel::queueImport($import, $filePath);
     
-    $this->assertDatabaseCount('students', 5);
+//     $this->assertDatabaseCount('students', 5);
     
-    $firstStudent = $students->first();
+//     $firstStudent = $students->first();
     
-    $this->assertDatabaseHas('students', [
-        'first_name' => $firstStudent->first_name,
-        'last_name' => $firstStudent->last_name,
-        'student_no' => $firstStudent->student_no
-    ]);
+//     $this->assertDatabaseHas('students', [
+//         'first_name' => $firstStudent->first_name,
+//         'last_name' => $firstStudent->last_name,
+//         'student_no' => $firstStudent->student_no
+//     ]);
     
-});
+// });

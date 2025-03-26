@@ -25,15 +25,19 @@ class StudentController extends Controller
 
     public function download(FileExportRequest $req)
     {
-        return $this->studentService->download($req->file_type);
+        try {
+            return $this->studentService->download($req->file_type);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     public function import(FileRequest $req)
-{
-    $import = $this->studentService->import($req->file('file'));
+    {
+        $import = $this->studentService->import($req->file('file'));
 
-    return !empty($import['error'])
-        ? response()->json(['error' => $import['error']], 422)
-        : response()->json(['message' => $import['message']], 200);
+        return !empty($import['error'])
+            ? response()->json(['error' => $import['error']], 422)
+            : response()->json(['message' => $import['message']], 200);
 }
 }

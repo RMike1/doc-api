@@ -4,10 +4,6 @@ namespace App\Enums;
 
 enum FileExtension: string
 {
-    case XLSX = 'xlsx';
-    case CSV = 'csv';
-    case XLS = 'xls';
-
     public function fileFormat(): string
     {
         return match ($this) {
@@ -16,4 +12,7 @@ enum FileExtension: string
             self::XLS => \Maatwebsite\Excel\Excel::XLS,
         };
     }
+    case XLSX = 'xlsx';
+    case CSV = 'csv';
+    case XLS = 'xls';
 }

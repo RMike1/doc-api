@@ -7,11 +7,6 @@ use App\Services\Students\Pdf\StudentPdfExport;
 
 class ExportStrategyFactory
 {
-    private const STRATEGIES = [
-        'excel' => ExcelExportStrategy::class,
-        'pdf' => PdfExportStrategy::class,
-    ];
-
     public static function create(string $type): ExportStrategy
     {
         if (! isset(self::STRATEGIES[$type])) {
@@ -26,4 +21,9 @@ class ExportStrategyFactory
 
         return new $strategyClass;
     }
+
+    private const STRATEGIES = [
+        'excel' => ExcelExportStrategy::class,
+        'pdf' => PdfExportStrategy::class,
+    ];
 }

@@ -11,7 +11,7 @@ class ImportService
 {
     public function importStudents(UploadedFile $file): array
     {
-        $fileExtension = strtolower($file->getClientOriginalExtension());
+        $fileExtension = mb_strtolower($file->getClientOriginalExtension());
         $fileType = FileExtension::tryFrom($fileExtension);
 
         return $fileType

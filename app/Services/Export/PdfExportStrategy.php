@@ -8,8 +8,7 @@ use Exception;
 
 class PdfExportStrategy implements ExportStrategy
 {
-
-    public function __construct(private StudentPdfExport $pdfExport){}
+    public function __construct(private StudentPdfExport $pdfExport) {}
 
     public function export(): array
     {

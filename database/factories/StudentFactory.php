@@ -20,7 +20,7 @@ class StudentFactory extends Factory
             'first_name' => fake()->firstName(),
             'last_name' => fake()->lastName(),
             'age' => fake()->numberBetween(15, 60),
-            'student_no'=> fake()->unique()->numberBetween(1000, 9999),
+            'student_no' => fake()->unique()->numberBetween(1000, 9999),
             'level' => fake()->randomElement(['one', 'two', 'three']),
         ];
     }

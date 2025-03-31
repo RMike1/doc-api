@@ -1,15 +1,11 @@
 <?php
 
 use App\Models\Student;
-use Mockery\MockInterface;
-use Illuminate\Http\UploadedFile;
-use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\Queue;
-use Illuminate\Support\Facades\Storage;
-use App\Services\Students\StudentService;
-
 use App\Services\Students\Excel\StudentExport;
+use App\Services\Students\StudentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 uses(RefreshDatabase::class);
 
@@ -24,7 +20,7 @@ describe('export students data with excel', function () {
         $this->partialMock(StudentService::class, function ($mock) {
             $mock->shouldReceive()->export()->with('excel')->once()->passthru();
         });
-        $response=$this->getJson(route('students.export', ['file_type' => 'excel']))
+        $response = $this->getJson(route('students.export', ['file_type' => 'excel']))
             ->assertStatus(200)
             ->assertExactJson(['message' => 'Excel export started!']);
         Excel::matchByRegex();
@@ -34,8 +30,9 @@ describe('export students data with excel', function () {
                 'Last Name',
                 'Age',
                 'Student Number',
-                'Level'
+                'Level',
             ]);
+
             return true;
         });
     });
@@ -62,9 +59,9 @@ describe('export students data as pdf', function () {
         $this->partialMock(StudentService::class, function ($mock) {
             $mock->shouldReceive()->export()->with('pdf')->once()->passthru();
         });
-        $response=$this->getJson(route('students.export', ['file_type' => 'pdf']))
+        $response = $this->getJson(route('students.export', ['file_type' => 'pdf']))
             ->assertStatus(200);
-            PDF::assertViewIs('export-pdf')
+        PDF::assertViewIs('export-pdf')
             ->assertSeeText('Students Data')
             ->assertDontSeeText('No data available')
             ->assertViewHas(['students' => $students]);

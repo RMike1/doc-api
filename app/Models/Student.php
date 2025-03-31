@@ -9,5 +9,6 @@ class Student extends Model
 {
     /** @use HasFactory<\Database\Factories\StudentFactory> */
     use HasFactory;
+
     protected $guarded = [];
 }

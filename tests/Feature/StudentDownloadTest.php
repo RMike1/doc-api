@@ -1,11 +1,11 @@
 <?php
 
 use App\Models\Student;
+use App\Services\Students\Excel\StudentExport;
 use App\Services\Students\StudentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Services\Students\Excel\StudentExport;
 
 uses(RefreshDatabase::class);
 
@@ -15,11 +15,10 @@ beforeEach(function () {
     PDF::fake();
 });
 
-
 it('downloads student data as excel file', function () {
     Student::factory()->count(10)->create();
     $this->getJson(route('students.download', ['file_type' => 'excel']))
-    ->assertStatus(200);
+        ->assertStatus(200);
     Excel::matchByRegex();
     Excel::assertDownloaded('/students_\d{14}\.xlsx/', function (StudentExport $export) {
         expect($export->headings())->toBe([
@@ -27,12 +26,12 @@ it('downloads student data as excel file', function () {
             'Last Name',
             'Age',
             'Student Number',
-            'Level'
+            'Level',
         ]);
+
         return true;
     });
 });
-
 
 it('downloads student data as pdf', function () {
     Student::factory()->count(10)->create();
@@ -48,7 +47,6 @@ it('returns error for unsupported format', function () {
     $response = $this->getJson(route('students.download', ['file_type' => 'docx']));
     $response->assertStatus(422);
 });
-
 
 it('returns error when no data to export', function () {
     $this->mock(StudentService::class)

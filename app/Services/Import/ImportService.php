@@ -22,6 +22,7 @@ class ImportService
     private function queueImport($file, string $format): array
     {
         Excel::queueImport(new StudentImport, $file, null, $format);
+
         return ['message' => "Student data import is in progress with {$file->getClientOriginalExtension()} extension..."];
     }
 }

@@ -17,8 +17,8 @@ class StudentSeeder extends Seeder
         Schema::disableForeignKeyConstraints();
         DB::beginTransaction();
         $data = [];
-        $chunkSize = 1000;
-        $totalRecords = 50000;
+        $chunkSize = 500;
+        $totalRecords = 1000;
 
         for ($i = 0; $i < $totalRecords; $i++) {
             $data[] = [

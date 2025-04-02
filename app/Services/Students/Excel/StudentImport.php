@@ -4,8 +4,10 @@ namespace App\Services\Students\Excel;
 
 use App\Models\Student;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Concerns\SkipsOnError;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToModel;
@@ -18,15 +20,20 @@ use Throwable;
 
 class StudentImport implements ShouldQueue, SkipsOnError, SkipsOnFailure, ToModel, WithBatchInserts, WithChunkReading, WithStartRow, WithValidation
 {
-    public function model(array $row)
+    public function model(array $row): Student
     {
-        return new Student([
-            'first_name' => $row[0],
-            'last_name' => $row[1],
-            'age' => $row[2],
-            'student_no' => $row[3],
-            'level' => $row[4],
-        ]);
+        return DB::transaction(function () use ($row) {
+            $student = new Student([
+                'first_name' => $row[0],
+                'last_name' => $row[1],
+                'age' => $row[2],
+                'student_no' => $row[3],
+                'level' => $row[4],
+            ]);
+            $student->save();
+
+            return $student;
+        });
     }
 
     public function startRow(): int
@@ -52,23 +59,20 @@ class StudentImport implements ShouldQueue, SkipsOnError, SkipsOnFailure, ToMode
 
     public function batchSize(): int
     {
-        return 100;
+        return 1000;
     }
 
     public function onFailure(Failure ...$failures)
     {
         foreach ($failures as $failure) {
             // Log::warning($failure->errors());
+            throw new ValidationException($failure->errors());
         }
     }
 
     public function onError(Throwable $e)
     {
         // Log::error($e->getMessage());
-    }
-
-    public function failed(Throwable $exception)
-    {
-        // Log::error($exception->getMessage());
+        throw new \Exception('An error occurred while processing the import.');
     }
 }

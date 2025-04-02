@@ -63,11 +63,12 @@ class StudentExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithChunk
 
     public function chunkSize(): int
     {
-        return 1000;
+        return 10000;
     }
 
     public function failed(Throwable $e)
     {
         // Log::error($e->getMessage());
+        throw new \Exception('Student export failed');
     }
 }

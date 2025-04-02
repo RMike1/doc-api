@@ -13,17 +13,19 @@ class StudentController extends Controller
 
     public function export(FileExportRequest $req)
     {
-        $export = $this->studentService->export($req->file_type);
+        try {
+            $this->studentService->export($req->validated('file_type'));
 
-        return isset($export['error'])
-        ? response()->json(['error' => $export['error']], 500)
-        : response()->json(['message' => $export['message']], 200);
+            return response()->json(['message' => 'Export started!'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     public function download(FileExportRequest $req)
     {
         try {
-            return $this->studentService->download($req->file_type);
+            return $this->studentService->download($req->validated('file_type'));
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -31,10 +33,12 @@ class StudentController extends Controller
 
     public function import(FileRequest $req)
     {
-        $import = $this->studentService->import($req->file('file'));
+        try {
+            $this->studentService->import($req->file('file'));
 
-        return ! empty($import['error'])
-            ? response()->json(['error' => $import['error']], 422)
-            : response()->json(['message' => $import['message']], 200);
+            return response()->json(['message' => 'Import started!'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }

@@ -11,26 +11,21 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class StudentService
 {
-    public function __construct(private ImportService $importService) {}
+    public function __construct(private ImportService $importService, private ExportStrategyFactory $exportStrategyFactory) {}
 
     // -------------------export student data----------------------
 
-    public function export(string $fileType): array
+    public function export(string $fileType): void
     {
-        try {
-            $strategy = ExportStrategyFactory::create($fileType);
-
-            return $strategy->export();
-        } catch (\Exception $e) {
-            return ['error' => $e->getMessage()];
-        }
+        $strategy = $this->exportStrategyFactory->create($fileType);
+        $strategy->export();
     }
 
     // -------------------import student data----------------------
 
-    public function import(UploadedFile $file): array
+    public function import(UploadedFile $file): void
     {
-        return $this->importService->importStudents($file);
+        $this->importService->importStudents($file);
     }
 
     // -------------------Download Option---------------------

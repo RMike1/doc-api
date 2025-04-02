@@ -15,11 +15,11 @@ describe('import students data', function () {
             ->import()
             ->once()
             ->with($file)
-            ->andReturn(['message' => 'Student data import is in progress...']);
+            ->andReturn(null);
 
         $this->postJson(route('students.import'), ['file' => $file])
             ->assertStatus(200)
-            ->assertJson(['message' => 'Student data import is in progress...']);
+            ->assertJson(['message' => 'Import started!']);
     });
 
     it('returns error when file is not provided', function () {
@@ -33,5 +33,4 @@ describe('import students data', function () {
                 'file' => 'The file field is required.',
             ]);
     });
-
 });

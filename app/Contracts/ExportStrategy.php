@@ -2,7 +2,11 @@
 
 namespace App\Contracts;
 
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+
 interface ExportStrategy
 {
-    public function export(): array;
+    public function export(): void;
+
+    // public function download(): BinaryFileResponse;
 }

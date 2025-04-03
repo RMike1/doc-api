@@ -10,7 +10,7 @@ class ExportStrategyFactory
 {
     public function create(string $fileType): ExportStrategy
     {
-        $type = ExportType::tryFrom($fileType) ?? throw new \Exception('Invalid export type.');
+        $type = ExportType::tryFrom($fileType) ?? throw new \Exception('Unsupported export type.');
 
         return match ($type) {
             ExportType::EXCEL => new ExcelExportStrategy,

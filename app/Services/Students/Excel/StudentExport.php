@@ -63,7 +63,7 @@ class StudentExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithChunk
 
     public function chunkSize(): int
     {
-        return 10000;
+        return 50000;
     }
 
     public function failed(Throwable $e)

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ExportType;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -25,7 +26,7 @@ class FileExportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file_type' => ['required', Rule::in(['excel', 'pdf'])],
+            'file_type' => ['required', Rule::enum(ExportType::class)],
         ];
     }
 

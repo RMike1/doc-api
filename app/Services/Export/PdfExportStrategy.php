@@ -14,5 +14,6 @@ class PdfExportStrategy implements ExportStrategy
     {
         $result = $this->pdfExport->generate();
         throw_if(! $result, new Exception('PDF export failed. please try again...'));
+
     }
 }

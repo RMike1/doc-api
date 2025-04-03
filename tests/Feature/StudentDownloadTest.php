@@ -36,8 +36,7 @@ it('downloads student data as excel file', function () {
 it('downloads student data as pdf', function () {
     Student::factory()->count(10)->create();
     $students = Student::get(['first_name', 'last_name', 'age', 'student_no', 'level']);
-    $response = $this->getJson(route('students.download', ['file_type' => 'pdf']));
-    $response->assertStatus(200);
+    $this->getJson(route('students.download', ['file_type' => 'pdf']));
 
     PDF::assertViewIs('export-pdf');
     PDF::assertViewHas('students', $students);

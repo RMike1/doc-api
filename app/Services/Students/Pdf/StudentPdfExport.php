@@ -17,6 +17,5 @@ class StudentPdfExport
         $pdf->save($filePath);
 
         return true;
-
     }
 }

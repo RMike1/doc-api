@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\FileExtension;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -24,7 +25,7 @@ class FileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => 'required|max:6000|mimes:xlsx,csv,xls',
+            'file' => 'required|max:6000|mimes:'.implode(',', FileExtension::values()),
         ];
     }
 

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Student;
 
-use App\Exceptions\InvalidExportTypeException;
+use App\Exceptions\ExportFailedException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FileExportRequest;
 use App\Http\Requests\FileRequest;
@@ -16,12 +16,14 @@ class StudentController extends Controller
 
     public function export(FileExportRequest $req): JsonResponse
     {
-        // dd($req);
         try {
-            $this->studentService->export($req->file_type);
+            $export=$this->studentService->export($req->file_type);
+            if ($export !== true) {
+                return response()->json(['error' => 'Export failed!'], 500);
+            }
 
             return response()->json(['message' => 'Export started!'], 200);
-        } catch (InvalidExportTypeException $e) {
+        } catch (ExportFailedException $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
     }

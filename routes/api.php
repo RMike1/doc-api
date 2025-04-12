@@ -10,6 +10,7 @@ Route::get('/user', function (Request $request) {
 
 Route::prefix('students')->group(function () {
     Route::get('/export', [StudentController::class, 'export'])->name('students.export');
-    Route::get('/download', [StudentController::class, 'download'])->name('students.download');
     Route::post('/import', [StudentController::class, 'import'])->name('students.import');
+    Route::get('/exports', [StudentController::class, 'exports'])->name('students.exports');
+    Route::get('download/{file}', [StudentController::class, 'download'])->name('students.download');
 });

@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('export_records', function (Blueprint $table) {
-            $table->id();
+            $table->ulid('id')->primary();
             $table->string('file_path');
-            $table->string('status'); 
+            $table->string('status');
             $table->timestamps();
         });
     }

@@ -2,31 +2,31 @@
 
 namespace App\Services\Students\Excel;
 
-use Exception;
-use Throwable;
-use App\Models\Student;
 use App\Enums\ExportStatus;
 use App\Models\ExportRecord;
+use App\Models\Student;
+use Exception;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Maatwebsite\Excel\Events\AfterSheet;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
-use App\Exceptions\ExportFailedException;
-use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\Exportable;
-use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Concerns\WithStyles;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Throwable;
 
-class StudentExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithChunkReading, WithColumnWidths, WithHeadings, WithStyles, WithEvents
+class StudentExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithChunkReading, WithColumnWidths, WithEvents, WithHeadings, WithStyles
 {
     use Exportable;
-    public function __construct(protected int $logId){}
+
+    public function __construct(protected $logId) {}
 
     public function query()
     {
@@ -74,13 +74,13 @@ class StudentExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithChunk
         return 500;
     }
 
-    public function registerEvents(): array 
+    public function registerEvents(): array
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
                 DB::transaction(function () {
                     $exportRecord = ExportRecord::find($this->logId);
-                    throw_unless($exportRecord, Exception::class,"Export record not found.");
+                    throw_unless($exportRecord, Exception::class, 'Export record not found..');
                     $exportRecord->update(['status' => ExportStatus::SUCCESS]);
                 });
             },
@@ -91,11 +91,11 @@ class StudentExport implements FromQuery, ShouldAutoSize, ShouldQueue, WithChunk
     {
         DB::transaction(function () use ($e) {
             $exportRecord = ExportRecord::find($this->logId);
-            throw_unless($exportRecord, Exception::class,"Export record not found.");
+            throw_unless($exportRecord, Exception::class, 'Export record not found..');
             $exportRecord->update([
                 'status' => ExportStatus::FAILED,
             ]);
-            Log::error('Export failed: ' . $e->getMessage());
+            Log::error('Export failed: '.$e->getMessage());
         });
     }
 }

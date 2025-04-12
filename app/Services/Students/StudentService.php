@@ -2,12 +2,13 @@
 
 namespace App\Services\Students;
 
+use App\Http\Resources\ExportRecordResource;
+use App\Models\ExportRecord;
 use App\Models\Student;
 use App\Services\Export\ExportStrategyFactory;
 use App\Services\Import\ImportService;
-use App\Services\Students\Excel\StudentExport;
 use Illuminate\Http\UploadedFile;
-use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage;
 
 class StudentService
 {
@@ -28,25 +29,21 @@ class StudentService
         $this->importService->importStudents($file);
     }
 
+    // -------------------get student data----------------------
+    public function exports()
+    {
+        return ExportRecordResource::collection(ExportRecord::latest()->get());
+        // return ExportRecord::latest()->get()->toResourceCollection();
+    }
+
     // -------------------Download Option---------------------
 
-    public function download(string $fileType)
+    public function downloadFile($file)
     {
-        $name = now()->format('YmdHis');
+        $file = ExportRecord::find($file);
+        throw_unless($file, new \Exception('Record not found!'));
+        throw_unless(Storage::disk('local')->exists($file->file_path), new \Exception('File not found!'));
 
-        if ($fileType === 'excel') {
-            $fileName = "students_{$name}.xlsx";
-
-            return Excel::download(new StudentExport, $fileName);
-        } elseif ($fileType === 'pdf') {
-            $students = Student::select('first_name', 'last_name', 'age', 'student_no', 'level')->get();
-            throw_if($students->isEmpty(), new \Exception('No data to export!'));
-
-            $pdf = \PDF::loadView('export-pdf', ['students' => $students]);
-
-            return $pdf->download("students_{$name}.pdf");
-        } else {
-            throw new \Exception('Unsupported file type!');
-        }
+        return Storage::download($file->file_path);
     }
 }

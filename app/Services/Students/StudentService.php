@@ -2,20 +2,16 @@
 
 namespace App\Services\Students;
 
-use App\Models\Student;
-use App\Models\ExportRecord;
+use App\Enums\ExportStatus;
 use App\Exceptions\AppException;
-use Illuminate\Http\UploadedFile;
-use App\Services\Import\ImportService;
-use Illuminate\Support\Facades\Storage;
-use App\Exceptions\FileNotFoundException;
-use App\Exceptions\RecordNotFoundException;
-use App\Http\Resources\ExportRecordResource;
-use Illuminate\Database\Eloquent\Collection;
+use App\Models\ExportRecord;
+use App\Models\Student;
 use App\Services\Export\ExportStrategyFactory;
+use App\Services\Import\ImportService;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class StudentService
 {
@@ -47,8 +43,10 @@ class StudentService
     public function downloadFile($file): StreamedResponse
     {
         $file = ExportRecord::find($file);
+        throw_if($file->status !== ExportStatus::SUCCESS, AppException::fileNotFound());
         throw_unless($file, AppException::recordNotFound());
         throw_unless(Storage::disk('local')->exists($file->file_path), AppException::fileNotFound());
+
         return Storage::download($file->file_path);
     }
 }

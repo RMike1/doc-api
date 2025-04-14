@@ -1,6 +1,6 @@
 <?php
 
-use App\Exceptions\InvalidExportTypeException;
+use App\Exceptions\AppException;
 use App\Services\Export\ExcelExportStrategy;
 use App\Services\Export\ExportStrategyFactory;
 use App\Services\Export\PdfExportStrategy;
@@ -20,9 +20,9 @@ it('creates pdf strategy', function () {
 });
 
 it('throws InvalidExportType exception for invalid file type', function () {
-    expect(fn () => $this->strategy->create('docx'))->toThrow(InvalidExportTypeException::class, 'Unsupported Export Types');
+    expect(fn () => $this->strategy->create('docx'))->toThrow(AppException::invalidFileType());
 });
 
 it('can not throws InvalidExportType exception for valid file type', function () {
-    expect(fn () => $this->strategy->create('pdf'))->not()->toThrow(InvalidExportTypeException::class);
+    expect(fn () => $this->strategy->create('pdf'))->not()->toThrow(AppException::invalidFileType());
 });

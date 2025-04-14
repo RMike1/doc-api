@@ -2,9 +2,8 @@
 
 namespace App\Services\Export;
 
-use Exception;
-use App\Exceptions\AppException;
 use App\Contracts\ExportStrategy;
+use App\Exceptions\AppException;
 use App\Services\Students\Pdf\StudentPdfExport;
 
 class PdfExportStrategy implements ExportStrategy

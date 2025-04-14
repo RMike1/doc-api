@@ -1,15 +1,19 @@
 <?php
 
+use App\Models\ExportRecord;
 use App\Services\Students\Excel\StudentExport;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 uses(RefreshDatabase::class);
+beforeEach(function () {
+    $this->exportRecord = ExportRecord::factory()->create();
+    $this->export = new StudentExport($this->exportRecord);
+});
 
 test('export file with headings', function () {
-    $export = new StudentExport;
-    $headings = $export->headings();
+    $headings = $this->export->headings();
     $expected = [
         'First Name',
         'Last Name',
@@ -21,8 +25,7 @@ test('export file with headings', function () {
 });
 
 it('export students with column widths', function () {
-    $export = new StudentExport;
-    $columnWidths = $export->columnWidths();
+    $columnWidths = $this->export->columnWidths();
     $expected = [
         'A' => 15,
         'B' => 15,
@@ -34,9 +37,8 @@ it('export students with column widths', function () {
 });
 
 it('export students with styles', function () {
-    $export = new StudentExport;
     $sheet = Mockery::mock(Worksheet::class);
-    $styles = $export->styles($sheet);
+    $styles = $this->export->styles($sheet);
     $expected = [
         1 => [
             'font' => ['bold' => true, 'color' => ['rgb' => 'ffffff']],

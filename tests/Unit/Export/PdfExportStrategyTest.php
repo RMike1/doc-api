@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\AppException;
 use App\Services\Export\PdfExportStrategy;
 use App\Services\Students\Pdf\StudentPdfExport;
 
@@ -17,5 +18,5 @@ it('returns the generated PDF when export is successful', function () {
 it('throws an exception if PDF export fails', function () {
     $this->pdfExport->shouldReceive('generate')->once()->andReturn(false);
     expect(fn () => $this->strategy->export())
-        ->toThrow(Exception::class, 'PDF export failed. please try again...');
+        ->toThrow(AppException::exportFailed());
 });

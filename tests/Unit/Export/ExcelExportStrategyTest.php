@@ -1,8 +1,11 @@
 <?php
 
 use App\Services\Export\ExcelExportStrategy;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
+
+uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->strategy = new ExcelExportStrategy;

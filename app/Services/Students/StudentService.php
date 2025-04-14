@@ -2,13 +2,20 @@
 
 namespace App\Services\Students;
 
-use App\Http\Resources\ExportRecordResource;
-use App\Models\ExportRecord;
 use App\Models\Student;
-use App\Services\Export\ExportStrategyFactory;
-use App\Services\Import\ImportService;
+use App\Models\ExportRecord;
+use App\Exceptions\AppException;
 use Illuminate\Http\UploadedFile;
+use App\Services\Import\ImportService;
 use Illuminate\Support\Facades\Storage;
+use App\Exceptions\FileNotFoundException;
+use App\Exceptions\RecordNotFoundException;
+use App\Http\Resources\ExportRecordResource;
+use Illuminate\Database\Eloquent\Collection;
+use App\Services\Export\ExportStrategyFactory;
+use Illuminate\Http\Resources\Json\ResourceCollection;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class StudentService
 {
@@ -29,21 +36,19 @@ class StudentService
         $this->importService->importStudents($file);
     }
 
-    // -------------------get student data----------------------
-    public function exports()
+    // -------------------Fetching Students data----------------------
+    public function exports(): ResourceCollection
     {
-        return ExportRecordResource::collection(ExportRecord::latest()->get());
-        // return ExportRecord::latest()->get()->toResourceCollection();
+        return ExportRecord::latest()->get()->toResourceCollection();
     }
 
     // -------------------Download Option---------------------
 
-    public function downloadFile($file)
+    public function downloadFile($file): StreamedResponse
     {
         $file = ExportRecord::find($file);
-        throw_unless($file, new \Exception('Record not found!'));
-        throw_unless(Storage::disk('local')->exists($file->file_path), new \Exception('File not found!'));
-
+        throw_unless($file, AppException::recordNotFound());
+        throw_unless(Storage::disk('local')->exists($file->file_path), AppException::fileNotFound());
         return Storage::download($file->file_path);
     }
 }

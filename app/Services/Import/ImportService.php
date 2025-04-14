@@ -3,9 +3,10 @@
 namespace App\Services\Import;
 
 use App\Enums\FileExtension;
-use App\Services\Students\Excel\StudentImport;
+use App\Exceptions\AppException;
 use Illuminate\Http\UploadedFile;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Services\Students\Excel\StudentImport;
 
 class ImportService
 {
@@ -13,7 +14,7 @@ class ImportService
     {
         $fileExtension = mb_strtolower($file->getClientOriginalExtension());
         $fileType = FileExtension::tryFrom($fileExtension);
-        throw_if(! $fileType, new \InvalidArgumentException('Invalid file format. Only xlsx, csv, or xls are allowed.'));
+        throw_if(! $fileType, AppException::invalidFileType('Invalid file format. Only xlsx, csv, or xls are allowed...'));
         $this->queueImport($file, $fileType->fileFormat());
     }
 

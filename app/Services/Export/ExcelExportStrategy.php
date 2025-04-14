@@ -2,14 +2,16 @@
 
 namespace App\Services\Export;
 
-use App\Contracts\ExportStrategy;
 use App\Enums\ExportStatus;
-use App\Exceptions\ExportFailedException;
 use App\Models\ExportRecord;
-use App\Services\Students\Excel\StudentExport;
 use Illuminate\Support\Carbon;
+use App\Exceptions\AppException;
+use App\Contracts\ExportStrategy;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Exceptions\ExportFailedException;
+use App\Services\Students\Excel\StudentExport;
 
 class ExcelExportStrategy implements ExportStrategy
 {
@@ -35,9 +37,6 @@ class ExcelExportStrategy implements ExportStrategy
     private function queueExport(ExportRecord $log, string $filePath): void
     {
         $export = Excel::queue(new StudentExport($log->id), $filePath);
-        if (! $export) {
-            $log->update(['status' => ExportStatus::FAILED]);
-            throw new ExportFailedException('Failed to queue export job');
-        }
+        throw_unless($export, AppException::exportFailed());
     }
 }

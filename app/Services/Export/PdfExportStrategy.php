@@ -2,9 +2,10 @@
 
 namespace App\Services\Export;
 
+use Exception;
+use App\Exceptions\AppException;
 use App\Contracts\ExportStrategy;
 use App\Services\Students\Pdf\StudentPdfExport;
-use Exception;
 
 class PdfExportStrategy implements ExportStrategy
 {
@@ -13,7 +14,6 @@ class PdfExportStrategy implements ExportStrategy
     public function export(): void
     {
         $result = $this->pdfExport->generate();
-        throw_if(! $result, new Exception('PDF export failed. please try again...'));
-
+        throw_if(! $result, AppException::exportFailed());
     }
 }

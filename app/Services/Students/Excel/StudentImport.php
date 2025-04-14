@@ -2,23 +2,24 @@
 
 namespace App\Services\Students\Excel;
 
+use Throwable;
 use App\Models\Student;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Validation\Rule;
+use App\Exceptions\AppException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
-use Maatwebsite\Excel\Concerns\SkipsOnError;
-use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Validators\Failure;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Maatwebsite\Excel\Concerns\SkipsOnError;
+use Maatwebsite\Excel\Concerns\WithStartRow;
+use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Concerns\SkipsOnFailure;
+use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
-use Maatwebsite\Excel\Concerns\WithStartRow;
-use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Validators\Failure;
-use Throwable;
 
-class StudentImport implements ShouldQueue, SkipsOnError, SkipsOnFailure, ToModel, WithBatchInserts, WithChunkReading, WithStartRow, WithValidation
+class StudentImport implements ShouldQueue, SkipsOnError, SkipsOnFailure, ToModel, WithChunkReading, WithStartRow, WithValidation
 {
     public function model(array $row): Student
     {
@@ -57,10 +58,10 @@ class StudentImport implements ShouldQueue, SkipsOnError, SkipsOnFailure, ToMode
         return 1000;
     }
 
-    public function batchSize(): int
-    {
-        return 1000;
-    }
+    // public function batchSize(): int
+    // {
+    //     return 1000;
+    // }
 
     public function onFailure(Failure ...$failures)
     {
@@ -73,6 +74,6 @@ class StudentImport implements ShouldQueue, SkipsOnError, SkipsOnFailure, ToMode
     public function onError(Throwable $e)
     {
         // Log::error($e->getMessage());
-        throw new \Exception('An error occurred while processing the import.');
+        throw AppException::importFailed('An error occurred while processing the import..');
     }
 }

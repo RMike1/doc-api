@@ -1,31 +1,31 @@
 <?php
 
-use App\Models\Student;
-use Maatwebsite\Excel\Facades\Excel;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
+use App\Models\ExportRecord;
 use App\Services\Students\Excel\StudentExport;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Maatwebsite\Excel\Excel as ExcelFormat;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 uses(RefreshDatabase::class);
+beforeEach(function () {
+    $this->exportRecord = ExportRecord::factory()->create();
+    $this->export = new StudentExport($this->exportRecord);
+});
 
 test('export file with headings', function () {
-    $export= new StudentExport();
-    $headings = $export->headings();
+    $headings = $this->export->headings();
     $expected = [
         'First Name',
         'Last Name',
         'Age',
         'Student Number',
-        'Level'
+        'Level',
     ];
     expect($headings)->toBe($expected);
 });
 
 it('export students with column widths', function () {
-    $export = new StudentExport();
-    $columnWidths = $export->columnWidths();
+    $columnWidths = $this->export->columnWidths();
     $expected = [
         'A' => 15,
         'B' => 15,
@@ -37,18 +37,17 @@ it('export students with column widths', function () {
 });
 
 it('export students with styles', function () {
-    $export = new StudentExport();
     $sheet = Mockery::mock(Worksheet::class);
-    $styles = $export->styles($sheet);
+    $styles = $this->export->styles($sheet);
     $expected = [
-        1=> [
+        1 => [
             'font' => ['bold' => true, 'color' => ['rgb' => 'ffffff']],
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '0f0f0f']],
-            'alignment' => ['horizontal' => 'center']
+            'alignment' => ['horizontal' => 'center'],
         ],
-        'C'  => ['alignment' => ['horizontal' => 'center']],
-        'D'  => ['alignment' => ['horizontal' => 'center']],
-        'E'  => ['alignment' => ['horizontal' => 'center']],
+        'C' => ['alignment' => ['horizontal' => 'center']],
+        'D' => ['alignment' => ['horizontal' => 'center']],
+        'E' => ['alignment' => ['horizontal' => 'center']],
     ];
     expect($styles)->toBe($expected);
 });

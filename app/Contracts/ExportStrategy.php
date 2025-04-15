@@ -4,5 +4,5 @@ namespace App\Contracts;
 
 interface ExportStrategy
 {
-    public function export(): array;
+    public function export(): void;
 }

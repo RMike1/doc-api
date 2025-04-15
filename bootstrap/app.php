@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\AppException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -15,5 +16,15 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (AppException $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], $e->getCode() ?: 500);
+        });
+        $exceptions->render(function (\Throwable $e) {
+            return response()->json([
+                'error' => 'Something went wrong.',
+                'details' => $e->getMessage(),
+            ], 500);
+        });
     })->create();

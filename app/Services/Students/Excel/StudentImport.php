@@ -2,39 +2,38 @@
 
 namespace App\Services\Students\Excel;
 
+use App\Exceptions\AppException;
 use App\Models\Student;
-use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithStartRow;
-use Illuminate\Validation\Rule;
-use Maatwebsite\Excel\Concerns\WithValidation;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Maatwebsite\Excel\Concerns\WithChunkReading;
-use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Throwable;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Concerns\SkipsOnError;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
+use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithStartRow;
+use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Validators\Failure;
+use Throwable;
 
-class StudentImport implements 
-    ToModel, 
-    WithStartRow, 
-    WithValidation, 
-    WithChunkReading, 
-    ShouldQueue,
-    WithBatchInserts,
-    SkipsOnError,
-    SkipsOnFailure
+class StudentImport implements ShouldQueue, SkipsOnError, SkipsOnFailure, ToModel, WithChunkReading, WithStartRow, WithValidation
 {
-    public function model(array $row)
+    public function model(array $row): Student
     {
-        return new Student([
-           'first_name' => $row[0],
-           'last_name' => $row[1],
-           'age' => $row[2],
-           'student_no' => $row[3],
-           'level' => $row[4],
-        ]);
+        return DB::transaction(function () use ($row) {
+            $student = new Student([
+                'first_name' => $row[0],
+                'last_name' => $row[1],
+                'age' => $row[2],
+                'student_no' => $row[3],
+                'level' => $row[4],
+            ]);
+            $student->save();
+
+            return $student;
+        });
     }
 
     public function startRow(): int
@@ -42,44 +41,38 @@ class StudentImport implements
         return 2;
     }
 
-
     public function rules(): array
     {
         return [
-             '*.0' => 'required|string|max:255',
-             '*.1' => 'required|string|max:255',
-             '*.2' => 'required|max:255',
-             '*.3' => 'required|max:255',
-             '*.4' => Rule::in(['one','two','three']),
+            '*.0' => 'required|string|max:255',
+            '*.1' => 'required|string|max:255',
+            '*.2' => 'required|max:255',
+            '*.3' => 'required|max:255',
+            '*.4' => Rule::in(['one', 'two', 'three']),
         ];
     }
 
     public function chunkSize(): int
     {
-        return 1000; 
+        return 1000;
     }
 
-
-    public function batchSize(): int
-    {
-        return 100; 
-    }
-
+    // public function batchSize(): int
+    // {
+    //     return 1000;
+    // }
 
     public function onFailure(Failure ...$failures)
     {
         foreach ($failures as $failure) {
             // Log::warning($failure->errors());
+            throw new ValidationException($failure->errors());
         }
     }
 
     public function onError(Throwable $e)
     {
         // Log::error($e->getMessage());
-    }
-
-    public function failed(Throwable $exception)
-    {
-        // Log::error($exception->getMessage());
+        throw AppException::importFailed('An error occurred while processing the import..');
     }
 }

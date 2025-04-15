@@ -1,43 +1,37 @@
 <?php
 
+use App\Contracts\ExportStrategy;
 use App\Services\Export\ExportStrategyFactory;
 use App\Services\Import\ImportService;
 use App\Services\Students\StudentService;
 use Illuminate\Http\UploadedFile;
 use Maatwebsite\Excel\Facades\Excel;
 
-
 beforeEach(function () {
+    $this->strategyMock = $this->mock(ExportStrategy::class);
     $this->importService = $this->mock(ImportService::class);
-    $this->service = new StudentService($this->importService);
+    $this->exportStrategyFactory = $this->mock(ExportStrategyFactory::class);
+    $this->service = new StudentService($this->importService, $this->exportStrategyFactory);
     Excel::fake();
 });
 
-describe('export', function () {
-    it('delegates to correct export strategy', function () {
-        $result = $this->service->export('excel');
-        expect($result)->toHaveKey('message')
-            ->and($result['message'])->toBe('Excel export started!');
-    });
+it('calls the correct export strategy', function (string $fileType) {
+    $this->exportStrategyFactory
+        ->shouldReceive('create')
+        ->with($fileType)
+        ->andReturn($this->strategyMock);
+    $this->strategyMock->shouldReceive('export')->once();
+    $this->service->export($fileType);
+    $this->strategyMock->shouldHaveReceived('export')->once();
+})->with(['excel', 'pdf']);
 
-    it('handles invalid export type', function () {
-        $result = $this->service->export('word');
-        expect($result)->toBe(['error' => 'Unsupported file type!']);
-    });
-});
-
-describe('import', function () {
-    it('delegates to import service', function () {
+describe('import students data', function () {
+    it('calls to import service', function () {
         $file = UploadedFile::fake()->create('students.xlsx');
-        $expectedResult = ['message' => 'Import started'];
-        
         $this->importService
             ->shouldReceive('importStudents')
             ->with($file)
-            ->once()
-            ->andReturn($expectedResult);
-            
-        $result = $this->service->import($file);
-        expect($result)->toBe($expectedResult);
+            ->once();
+        $this->service->import($file);
     });
 });

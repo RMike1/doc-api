@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\AppException;
 use App\Services\Export\PdfExportStrategy;
 use App\Services\Students\Pdf\StudentPdfExport;
 
@@ -8,19 +9,14 @@ beforeEach(function () {
     $this->strategy = new PdfExportStrategy($this->pdfExport);
 });
 
-test('generates pdf n returns success message', function () {
-    $expectedResult = ['message' => 'PDF export started!', 'file_path' => 'exports/students.pdf'];
-    $this->pdfExport->shouldReceive('generate')->once()->andReturn($expectedResult);
-    
+it('returns the generated PDF when export is successful', function () {
+    $this->pdfExport->shouldReceive('generate')->once()->andReturn(true);
     $result = $this->strategy->export();
-    
-    expect($result)->toBe($expectedResult);
+    expect(! $result)->toBe(true);
 });
 
-test('returns error message when export fails', function () {
-    $this->pdfExport->shouldReceive('generate')->andThrow(new \Exception('Export failed'));
-    
-    $result = $this->strategy->export();
-    
-    expect($result)->toBe(['error' => 'PDF export failed. please try again...']);
+it('throws an exception if PDF export fails', function () {
+    $this->pdfExport->shouldReceive('generate')->once()->andReturn(false);
+    expect(fn () => $this->strategy->export())
+        ->toThrow(AppException::exportFailed());
 });

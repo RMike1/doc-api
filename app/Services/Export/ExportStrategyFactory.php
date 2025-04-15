@@ -3,27 +3,20 @@
 namespace App\Services\Export;
 
 use App\Contracts\ExportStrategy;
+use App\Enums\ExportType;
+use App\Exceptions\AppException;
 use App\Services\Students\Pdf\StudentPdfExport;
 
 class ExportStrategyFactory
 {
-    private const STRATEGIES = [
-        'excel' => ExcelExportStrategy::class,
-        'pdf' => PdfExportStrategy::class
-    ];
-
-    public static function create(string $type): ExportStrategy
+    public function create(string $fileType): ExportStrategy
     {
-        if (!isset(self::STRATEGIES[$type])) {
-            throw new \Exception('Unsupported file type!');
-        }
+        $type = ExportType::tryFrom($fileType) ?? throw AppException::invalidFileType();
 
-        $strategyClass = self::STRATEGIES[$type];
-        
-        if ($strategyClass === PdfExportStrategy::class) {
-            return new $strategyClass(new StudentPdfExport());
-        }
-        
-        return new $strategyClass();
+        return match ($type) {
+            ExportType::EXCEL => new ExcelExportStrategy,
+            ExportType::PDF => new PdfExportStrategy(new StudentPdfExport),
+            default => throw AppException::invalidFileType(),
+        };
     }
 }

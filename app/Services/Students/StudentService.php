@@ -2,31 +2,51 @@
 
 namespace App\Services\Students;
 
+use App\Enums\ExportStatus;
+use App\Exceptions\AppException;
+use App\Models\ExportRecord;
+use App\Models\Student;
 use App\Services\Export\ExportStrategyFactory;
 use App\Services\Import\ImportService;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class StudentService
 {
+    public function __construct(private ImportService $importService, private ExportStrategyFactory $exportStrategyFactory) {}
 
-    public function __construct(private ImportService $importService){}
+    // -------------------export student data----------------------
 
-    //-------------------export student data----------------------
-
-    public function export(string $fileType): array
+    public function export(string $fileType): void
     {
-        try {
-            $strategy = ExportStrategyFactory::create($fileType);
-            return $strategy->export();  
-        } catch (\Exception $e) {
-            return ['error' => $e->getMessage()];
-        }
+        $strategy = $this->exportStrategyFactory->create($fileType);
+        $strategy->export();
     }
 
-    //-------------------import student data----------------------
+    // -------------------import student data----------------------
 
-    public function import(UploadedFile $file): array
+    public function import(UploadedFile $file): void
     {
-        return $this->importService->importStudents($file);
+        $this->importService->importStudents($file);
+    }
+
+    // -------------------Fetching Students data----------------------
+    public function exports(): ResourceCollection
+    {
+        return ExportRecord::latest()->get()->toResourceCollection();
+    }
+
+    // -------------------Download Option---------------------
+
+    public function downloadFile($file): StreamedResponse
+    {
+        $file = ExportRecord::find($file);
+        throw_if($file->status !== ExportStatus::SUCCESS, AppException::fileNotFound());
+        throw_unless($file, AppException::recordNotFound());
+        throw_unless(Storage::disk('local')->exists($file->file_path), AppException::fileNotFound());
+
+        return Storage::download($file->file_path);
     }
 }

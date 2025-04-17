@@ -43,8 +43,8 @@ class StudentService
     public function downloadFile($file): StreamedResponse
     {
         $file = ExportRecord::find($file);
-        throw_if($file->status !== ExportStatus::SUCCESS, AppException::fileNotFound());
         throw_unless($file, AppException::recordNotFound());
+        throw_if($file->status !== ExportStatus::SUCCESS, AppException::fileNotFound());
         throw_unless(Storage::disk('local')->exists($file->file_path), AppException::fileNotFound());
 
         return Storage::download($file->file_path);

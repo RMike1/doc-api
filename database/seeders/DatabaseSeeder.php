@@ -2,11 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Models\ExportRecord;
+use App\Models\User;
 use App\Models\Student;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use App\Models\User;
+use App\Models\ExportRecord;
 use Illuminate\Database\Seeder;
+use Database\Seeders\TeacherSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,6 +19,7 @@ class DatabaseSeeder extends Seeder
         // Student::factory(100)->create();
         $this->call([
             StudentSeeder::class,
+            TeacherSeeder::class,
         ]);
         ExportRecord::factory(2)->create();
         // User::factory()->create([

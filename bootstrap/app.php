@@ -21,10 +21,10 @@ return Application::configure(basePath: dirname(__DIR__))
                 'error' => $e->getMessage(),
             ], $e->getCode() ?: 500);
         });
-        $exceptions->render(function (\Throwable $e) {
-            return response()->json([
-                'error' => 'Something went wrong.',
-                'details' => $e->getMessage(),
-            ], 500);
-        });
+        // $exceptions->render(function (\Throwable $e) {
+        //     return response()->json([
+        //         'error' => 'Something went wrong.',
+        //         'details' => $e->getMessage(),
+        //     ], 500);
+        // });
     })->create();

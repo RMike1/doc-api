@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Student;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FileExportRequest;
@@ -9,7 +9,8 @@ use App\Services\Students\StudentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class StudentController extends Controller
+
+class SchoolController extends Controller
 {
     public function __construct(protected StudentService $studentService) {}
 

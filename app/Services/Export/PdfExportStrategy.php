@@ -2,17 +2,22 @@
 
 namespace App\Services\Export;
 
-use App\Contracts\ExportStrategy;
+use App\Models\Student;
 use App\Exceptions\AppException;
+use App\Contracts\ExportStrategy;
+use Illuminate\Support\Facades\Storage;
 use App\Services\Students\Pdf\StudentPdfExport;
 
 class PdfExportStrategy implements ExportStrategy
 {
-    public function __construct(private StudentPdfExport $pdfExport) {}
 
     public function export(): void
     {
-        $result = $this->pdfExport->generate();
-        throw_if(! $result, AppException::exportFailed());
+        $students = Student::select('first_name', 'last_name', 'age', 'student_no', 'level')->get();
+        throw_if(empty($students), AppException::couldNotFindData());
+        $pdf = \PDF::loadView('export-pdf', ['students' => $students]);
+        $name = now()->format('YmdHis');
+        $filePath = Storage::disk('local')->path("exports/students_{$name}.pdf");
+        $pdf->save($filePath);
     }
 }

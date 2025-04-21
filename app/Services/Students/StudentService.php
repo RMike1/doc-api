@@ -2,27 +2,37 @@
 
 namespace App\Services\Students;
 
-use App\Enums\ExportStatus;
-use App\Exceptions\AppException;
-use App\Models\ExportRecord;
 use App\Models\Student;
-use App\Services\Export\ExportStrategyFactory;
-use App\Services\Import\ImportService;
-use Illuminate\Http\Resources\Json\ResourceCollection;
+use App\Enums\ExportType;
+use App\Enums\ExportStatus;
+use App\Models\ExportRecord;
+use App\Exceptions\AppException;
 use Illuminate\Http\UploadedFile;
+use App\Services\Import\ImportService;
 use Illuminate\Support\Facades\Storage;
+use App\Services\Export\PdfExportStrategy;
+use App\Services\Export\ExcelExportStrategy;
+use App\Services\Students\Pdf\StudentPdfExport;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class StudentService
 {
-    public function __construct(private ImportService $importService, private ExportStrategyFactory $exportStrategyFactory) {}
+    public function __construct(private ImportService $importService) {}
 
     // -------------------export student data----------------------
 
-    public function export(string $fileType): void
+    public function export(string $fileType)
     {
-        $strategy = $this->exportStrategyFactory->create($fileType);
-        $strategy->export();
+
+        $type = ExportType::tryFrom($fileType) ?? throw AppException::invalidFileType();
+
+        $strategy = match ($type) {
+            ExportType::EXCEL => new ExcelExportStrategy,
+            ExportType::PDF => new PdfExportStrategy(),
+            default => throw AppException::invalidFileType(),
+        };
+       return $strategy->export();
     }
 
     // -------------------import student data----------------------

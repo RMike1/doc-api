@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('first_name');
             $table->string('last_name');
-            $table->string('degree');
-            $table->string('teacher_id');
+            $table->string('email');
+            $table->string('subject');
             $table->timestamps();
         });
     }

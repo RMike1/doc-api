@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('export_records', function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->string('file_path');
+            $table->string('type')->nullable();
+            $table->string('format')->nullable();
             $table->string('status');
             $table->timestamps();
         });

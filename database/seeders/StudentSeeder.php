@@ -27,8 +27,6 @@ class StudentSeeder extends Seeder
                 'age' => fake()->numberBetween(15, 60),
                 'student_no' => fake()->numberBetween(1000, 9999),
                 'level' => fake()->randomElement(['one', 'two', 'three']),
-                'created_at' => now(),
-                'updated_at' => now(),
             ];
             if (($i + 1) % $chunkSize === 0 || $i === $totalRecords - 1) {
                 DB::table('students')->insert($data);

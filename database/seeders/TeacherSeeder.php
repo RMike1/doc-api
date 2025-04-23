@@ -25,10 +25,8 @@ class TeacherSeeder extends Seeder
             $data[] = [
                 'first_name' => fake()->firstName(),
                 'last_name' => fake()->lastName(),
-                'teacher_id' => fake()->numberBetween(1000, 9999),
-                'degree' => fake()->randomElement(['bachelor', 'Master', 'PHD']),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'email' => fake()->email(),
+                'subject' => fake()->word(),
             ];
             if (($i + 1) % $chunkSize === 0 || $i === $totalRecords - 1) {
                 DB::table('teachers')->insert($data);

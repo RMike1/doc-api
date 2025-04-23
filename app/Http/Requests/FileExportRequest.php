@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ExportableType;
 use App\Enums\ExportType;
 use App\Enums\SchoolEnum;
 use Illuminate\Contracts\Validation\Validator;
@@ -28,7 +29,7 @@ class FileExportRequest extends FormRequest
     {
         return [
             'file_type' => ['required', Rule::enum(ExportType::class)],
-            'school' => ['required', Rule::enum(SchoolEnum::class)],
+            'school' => ['required', Rule::enum(ExportableType::class)],
         ];
     }
 

@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum SchoolEnum: string
+enum ExportableType: string
 {
     case STUDENT = 'student';
     case TEACHER = 'teacher';

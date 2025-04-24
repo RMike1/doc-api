@@ -19,22 +19,6 @@ class StudentService
 {
     public function __construct(private ImportService $importService) {}
 
-    // -------------------export student data----------------------
-
-    public function export(string $fileType)
-    {
-
-        $type = ExportType::tryFrom($fileType) ?? throw AppException::invalidFileType();
-
-        $strategy = match ($type) {
-            ExportType::EXCEL => new ExcelExportStrategy,
-            ExportType::PDF => new PdfExportStrategy,
-            default => throw AppException::invalidFileType(),
-        };
-
-        return $strategy->export();
-    }
-
     // -------------------import student data----------------------
 
     public function import(UploadedFile $file): void

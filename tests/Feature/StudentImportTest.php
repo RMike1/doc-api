@@ -17,7 +17,7 @@ describe('import students data', function () {
             ->with($file)
             ->andReturn(null);
 
-        $this->postJson(route('students.import'), ['file' => $file])
+        $this->postJson(route('import'), ['file' => $file])
             ->assertStatus(200)
             ->assertJson(['message' => 'Import started!']);
     });
@@ -27,7 +27,7 @@ describe('import students data', function () {
             ->shouldNotReceive()
             ->import();
 
-        $this->postJson(route('students.import'), ['file' => null])
+        $this->postJson(route('import'), ['file' => null])
             ->assertStatus(422)
             ->assertInvalid([
                 'file' => 'The file field is required.',

@@ -17,7 +17,7 @@ it('downloads the exported student file if it exists', function () {
         'status' => ExportStatus::SUCCESS,
     ]);
 
-    $this->getJson(route('students.download', $record->id))
+    $this->getJson(route('download', $record->id))
         ->assertOk()
         ->assertHeader('content-disposition', 'attachment; filename='.basename($filePath));
 });

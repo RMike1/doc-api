@@ -10,20 +10,10 @@ use Maatwebsite\Excel\Facades\Excel;
 beforeEach(function () {
     $this->strategyMock = $this->mock(ExportStrategy::class);
     $this->importService = $this->mock(ImportService::class);
-    $this->exportStrategyFactory = $this->mock(ExportStrategyFactory::class);
-    $this->service = new StudentService($this->importService, $this->exportStrategyFactory);
+    $this->service = new StudentService($this->importService);
     Excel::fake();
 });
 
-it('calls the correct export strategy', function (string $fileType) {
-    $this->exportStrategyFactory
-        ->shouldReceive('create')
-        ->with($fileType)
-        ->andReturn($this->strategyMock);
-    $this->strategyMock->shouldReceive('export')->once();
-    $this->service->export($fileType);
-    $this->strategyMock->shouldHaveReceived('export')->once();
-})->with(['excel', 'pdf']);
 
 describe('import students data', function () {
     it('calls to import service', function () {

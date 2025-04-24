@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\ExportableType;
 use App\Enums\ExportStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -20,6 +21,7 @@ class ExportRecordFactory extends Factory
         return [
             'file_path' => fake()->filePath('exports'),
             'status' => fake()->randomElement(ExportStatus::cases()),
+            'type' => fake()->randomElement(ExportableType::cases()),
         ];
     }
 }

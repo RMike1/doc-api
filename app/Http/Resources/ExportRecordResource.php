@@ -18,6 +18,7 @@ class ExportRecordResource extends JsonResource
         return [
             'id' => $this->id,
             'status' => $this->status,
+            'type' => $this->type,
             'file_path' => $this->when($this->status === ExportStatus::SUCCESS, $this->file_path),
             'exported_at' => $this->when($this->status === ExportStatus::SUCCESS, $this->updated_at->toDateTimeString()),
         ];

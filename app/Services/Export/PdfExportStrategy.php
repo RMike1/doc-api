@@ -2,15 +2,13 @@
 
 namespace App\Services\Export;
 
-use App\Models\Student;
-use App\Exceptions\AppException;
 use App\Contracts\ExportStrategy;
+use App\Exceptions\AppException;
+use App\Models\Student;
 use Illuminate\Support\Facades\Storage;
-use App\Services\Students\Pdf\StudentPdfExport;
 
 class PdfExportStrategy implements ExportStrategy
 {
-
     public function export(): void
     {
         $students = Student::select('first_name', 'last_name', 'age', 'student_no', 'level')->get();

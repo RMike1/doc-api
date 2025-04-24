@@ -19,8 +19,9 @@ class TeacherFactory extends Factory
         return [
             'first_name' => fake()->firstName(),
             'last_name' => fake()->lastName(),
-            'teacher_id' => fake()->unique()->numberBetween(1000, 9999),
-            'degree' => fake()->randomElement(['bachelor', 'Master', 'PHD']),
+            'email' => fake()->unique()->safeEmail(),
+            'subject' => fake()->word(),
+            'department' => fake()->word(),
         ];
     }
 }

@@ -25,6 +25,10 @@ class AppException extends Exception
     {
         return new self($message, $code);
     }
+    public static function invalidExportType(string $message = 'Invalid Export type', int $code = 422): AppException
+    {
+        return new self($message, $code);
+    }
 
     public static function couldNotFindData(string $message = 'No data to export', int $code = 400): AppException
     {

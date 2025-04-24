@@ -2,18 +2,17 @@
 
 namespace App\Services\Students;
 
-use App\Models\Student;
-use App\Enums\ExportType;
 use App\Enums\ExportStatus;
-use App\Models\ExportRecord;
+use App\Enums\ExportType;
 use App\Exceptions\AppException;
-use Illuminate\Http\UploadedFile;
-use App\Services\Import\ImportService;
-use Illuminate\Support\Facades\Storage;
-use App\Services\Export\PdfExportStrategy;
+use App\Models\ExportRecord;
+use App\Models\Student;
 use App\Services\Export\ExcelExportStrategy;
-use App\Services\Students\Pdf\StudentPdfExport;
+use App\Services\Export\PdfExportStrategy;
+use App\Services\Import\ImportService;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class StudentService
@@ -29,10 +28,11 @@ class StudentService
 
         $strategy = match ($type) {
             ExportType::EXCEL => new ExcelExportStrategy,
-            ExportType::PDF => new PdfExportStrategy(),
+            ExportType::PDF => new PdfExportStrategy,
             default => throw AppException::invalidFileType(),
         };
-       return $strategy->export();
+
+        return $strategy->export();
     }
 
     // -------------------import student data----------------------

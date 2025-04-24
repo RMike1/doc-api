@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class TeacherSeeder extends Seeder
 {
@@ -25,8 +24,9 @@ class TeacherSeeder extends Seeder
             $data[] = [
                 'first_name' => fake()->firstName(),
                 'last_name' => fake()->lastName(),
-                'email' => fake()->email(),
+                'email' => fake()->unique()->safeEmail(),
                 'subject' => fake()->word(),
+                'department' => fake()->word(),
             ];
             if (($i + 1) % $chunkSize === 0 || $i === $totalRecords - 1) {
                 DB::table('teachers')->insert($data);

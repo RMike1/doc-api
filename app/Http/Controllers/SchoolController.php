@@ -2,25 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\FileExportRequest;
 use App\Http\Requests\FileRequest;
+use App\Services\ExportService;
 use App\Services\Students\StudentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-
 class SchoolController extends Controller
 {
-    public function __construct(protected StudentService $studentService) {}
+    public function __construct(protected StudentService $studentService,
+        protected ExportService $exportService) {}
 
     // ========================Export Students data==========================
 
-    public function export(FileExportRequest $req): JsonResponse
+    public function export(FileExportRequest $request): JsonResponse
     {
-        $this->studentService->export($req->validated('file_type'));
+        $filePath = $this->exportService->handle(
+            $request->getExportType(),
+            $request->getExportableType()
+        );
 
-        return response()->json(['message' => 'Export started!'], 200);
+        return response()->json([
+            'message' => 'Export Started!',
+        ], 200);
     }
 
     // ========================Import Students data==========================

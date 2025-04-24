@@ -2,12 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Models\ExportRecord;
 use App\Models\Student;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use App\Models\ExportRecord;
+use App\Models\User;
 use Illuminate\Database\Seeder;
-use Database\Seeders\TeacherSeeder;
 
 class DatabaseSeeder extends Seeder
 {

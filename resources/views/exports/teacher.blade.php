@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Export</title>
+    <title>Teacher Export</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -43,32 +43,30 @@
 
 <body>
 
-    <h1 style="text-align: center">Students Data</h1>
+    <h1 style="text-align: center">Teacher Data</h1>
     <table>
         <thead>
             <tr>
                 <th>#</th>
                 <th>First-Name</th>
                 <th>Last-Name</th>
-                <th>Age</th>
-                <th>Student No</th>
-                <th>Level</th>
+                <th>Email</th>
+                <th>Subject</th>
             </tr>
         </thead>
         <tbody>
-            @forelse ($students as $key => $student)
+            @forelse ($data as $key => $teacher)
                 <tr>
                     <td>{{ $key+1 }}</td>
-                    <td>{{ $student->first_name }}</td>
-                    <td>{{ $student->last_name }}</td>
-                    <td>{{ $student->age }}</td>
-                    <td>{{ $student->student_no }}</td>
-                    <td>{{ $student->level }}</td>
+                    <td>{{ $teacher['first_name'] }}</td>
+                    <td>{{ $teacher['last_name'] }}</td>
+                    <td>{{ $teacher['email'] }}</td>
+                    <td>{{ $teacher['subject'] }}</td>
                 </tr>
             @empty
                 <tr>
                     <td style="text-align: center" colspan="7">
-                        <h3>there is no student data yet</h3>
+                        <h3>there is no teacher data yet</h3>
                     </td>
                 </tr>
             @endforelse
